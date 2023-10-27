@@ -1,0 +1,11 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "database": "${workspaceFolder:learning-golang-gorm}/demo.sqlite",
+            "name": "demo"
+        }
+    ],
+    "sqltools.useNodeRuntime": true
+}
