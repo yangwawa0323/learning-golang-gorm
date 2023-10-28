@@ -3,18 +3,18 @@ package model
 import (
 	"database/sql"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 // golang struct field default value
 type User struct {
-	ID uint //   `ID` field primary key
-	// ID 		     uint   `gorm:"primarykey"`
-	Name         string  `gorm:"type:VARCHAR(250);not null"`
-	Email        *string `gorm:"not null"`
+	gorm.Model
+	Name         string
+	Email        *string
 	Age          uint8
 	Birthday     *time.Time
 	MemberNumber sql.NullString // golang struct , database table
-	Expired      sql.NullBool   `gorm:"default:false"`
 }
 
 type VipUser struct {
