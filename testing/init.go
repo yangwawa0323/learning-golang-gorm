@@ -26,5 +26,6 @@ func init() {
 		&model.Employee{},
 		&model.Book{},
 		&model.Author{},
+		&model.City{},
 	)
 }

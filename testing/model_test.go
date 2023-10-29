@@ -9,6 +9,7 @@ import (
 
 	"github.com/jaswdr/faker"
 	"github.com/yangwawa0323/learning-golang-gorm/model"
+	"gorm.io/gorm"
 )
 
 type DataMap map[string]interface{} // reflect 👎
@@ -131,6 +132,127 @@ func testDbTableFirst(t *testing.T) {
 	t.Logf("%#v", result)
 }
 
+func testDbFirstWithKey(t *testing.T) {
+	var user model.User
+	// db.First(&user, 10) // 👍 select * from users where id = 10
+	db.First(&user, "10") //  👍 select * from users where id = 10
+
+	t.Log(user)
+}
+
+func testDbFindThreeUser(t *testing.T) {
+	var users []model.User
+	db.Find(&users, []int{1, 2000, 3000})
+	t.Log(users)
+}
+
+func testDbFirstWithId(t *testing.T) {
+	var user = model.User{Model: gorm.Model{ID: 10}} // 👍
+	db.First(&user)
+	// var user model.User   // 👎
+	// db.Model(&model.User{Model: gorm.Model{ID: 10}}).First(&user)
+	t.Log(user)
+}
+
+func printUsers(t *testing.T, users []model.User) {
+	var total = len(users)
+	for idx, user := range users {
+		t.Log(fmt.Sprintf("%d/%d : ", idx, total), user)
+	}
+
+}
+
+func testDbWhereCondition(t *testing.T) {
+	var users []model.User
+
+	// SELECT * FROM users WHERE name = "xxx"
+	// db.Where("name = ?", "Mr. Gaetano Bartell").Find(&users)
+
+	// SELECT * FROM users WHERE name <> "xxx"
+	// db.Where("name <> ?", "Mr. Gaetano Bartell").Find(&users)
+
+	// SELECT * FROM users WHERE name IN ("xxx", "YYY","ZZZ")
+	// db.Where("name IN ?", []string{"Mr. Gaetano Bartell", "Yang kun", "Claudie Effertz"}).Find(&users)
+
+	// SELECT * FROM users name LIKE "Gaet%"
+	// db.Where("name LIKE ?", "%Gaet%").Find(&users)
+	// db.Where("name LIKE ?", "Mr.%").Find(&users)
+
+	// SELECT * FROM users WHERE name LIKE "Mr.%" AND age < ?
+	// db.Where("name LIKE ? AND age < ?", "Mr.%", "105").Find(&users)
+
+	//
+	db.Where(map[string]interface{}{
+		"name": "Mr. Wade Ernser DDS",
+		"age":  25,
+	}).Find(&users)
+	// t.Log(users)
+	printUsers(t, users)
+}
+
+func testDbNotAndOrCondition(t *testing.T) {
+	var users []model.User
+
+	// SELECT * FROM users WHERE NOT name = "xxxx"
+	// db.Not("name = ?", "Mr. Gaetano Bartell").Find(&users)
+
+	// SELECT * FROM users WHERE id NOT IN (1,30,40)
+	// db.Not([]int64{1, 30, 40, 50}).Find(&users)
+
+	// db.Not(model.User{Name: "Geovanni Schneide", Age: 154}).Find(&users)
+
+	db.Where("name = ?", "Geovanni Schneider").Or("email is not null").Find(&users)
+
+	printUsers(t, users)
+}
+
+func testDbSelect(t *testing.T) {
+	var users []model.User
+	db.Select("email", "age").Find(&users)
+
+	printUsers(t, users)
+}
+
+func testDbOrder(t *testing.T) {
+	var users []model.User
+	// SELECT * FROM users ORDER BY age desc, name;
+	// db.Order("age desc , name").Find(&users)
+	db.Where("age > ? and age < ? ", 4, 14).Order("age desc").Order("name").Find(&users)
+	printUsers(t, users)
+}
+
+func testDbLimitOffset(t *testing.T) {
+	var users []model.User
+
+	// SELECT * FROM users LIMIT 3;
+	// db.Order("age desc").Limit(3).Find(&users)  👍
+
+	// page_num - 1 * 10   3 - 1 * 10 = 20
+	db.Limit(10).Offset(20).Order("ID").Find(&users) // 2-11, 12-21, 22-31
+	printUsers(t, users)
+}
+
+func testDbGroupHaving(t *testing.T) {
+	type result struct {
+		CountryCode string
+		Total       int
+	}
+
+	// var results []result
+
+	// ORM
+	// SELECT country_code, sum(population) as total from
+	// cities GROUP BY country_code HAVING total < 500;
+	// db.Model(&model.City{}).Select("country_code as CountryCode, sum(population) as Total").Group("country_code").Having("Total < ? ", 500).Find(&results)
+
+	// SELECT country_code, sum(population) as Total from
+	// cities GROUP BY country_code ORDER BY Total DESC limit 1;
+	// t.Logf("%#v\n", results)
+	var r result
+	db.Model(&model.City{}).Select("country_code as CountryCode, sum(population) as Total").Group("country_code").Order("Total desc").Limit(1).First(&r)
+	t.Logf("%#v", r)
+}
+
 // TestXXXX(t *testing.T)
 func TestModel(t *testing.T) {
 
@@ -165,10 +287,37 @@ func TestModel(t *testing.T) {
 	// t.Run("db.Model.Take", testDbModelTake)
 
 	// db.Table().Take()
-	t.Run("db.Table.Take", testDbTableTake)
+	// t.Run("db.Table.Take", testDbTableTake)
 
 	// db.Table().First()  👎
-	t.Run("db.Table.First", testDbTableFirst)
+	// t.Run("db.Table.First", testDbTableFirst)
+
+	// db.First() by primary key
+	// t.Run("db.First() by primary key", testDbFirstWithKey)
+
+	// db.Find() query three users
+	// t.Run("db.Find() query 3 users", testDbFindThreeUser)
+
+	// db.First() with id
+	// t.Run("db.First() with id ", testDbFirstWithId)
+
+	// db.Where()
+	// t.Run("db.Where() ", testDbWhereCondition)
+
+	// db.Not()
+	// t.Run("db.Not()", testDbNotAndOrCondition)
+
+	// db.Select()
+	// t.Run("db.Select()", testDbSelect)
+
+	// db.Order()
+	// t.Run("db.Order()", testDbOrder)
+
+	// db.Limit()
+	// t.Run("db.Limit()", testDbLimitOffset)
+
+	// db.Select().Group()
+	t.Run("db.Select().Group()", testDbGroupHaving)
 }
 
 // Author 1-->N  Books
