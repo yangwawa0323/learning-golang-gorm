@@ -5,6 +5,7 @@ package testing
 import (
 	"fmt"
 	"testing"
+<<<<<<< HEAD
 	"time"
 
 	"github.com/jaswdr/faker"
@@ -43,9 +44,26 @@ func testBatchCreateUsers(t *testing.T) {
 
 	result := db.Create(&users)
 	t.Log(fmt.Sprintf("create %d users", result.RowsAffected))
+=======
 
+	"github.com/yangwawa0323/learning-golang-gorm/model"
+)
+>>>>>>> delete-data
+
+func testBatchCreateUsers(t *testing.T) {
+	var users []model.User = make([]model.User, 0)
+	for i := 0; i < 100; i++ {
+		var user = model.User{
+			Name: fmt.Sprintf("JinZhu%03d", i),
+			Age:  18,
+		}
+		users = append(users, user)
+	}
+
+	db.Create(&users)
 }
 
+<<<<<<< HEAD
 func testCreateMapUser(t *testing.T) {
 	result := db.Model(&model.User{}).Create(
 		map[string]interface{}{
@@ -53,6 +71,26 @@ func testCreateMapUser(t *testing.T) {
 			"Age":      18,
 			"Birthday": time.Now(),
 		})
+=======
+func testDbDelete(t *testing.T) {
+	db.Where("id = ?", 99).Delete(&model.User{})
+}
+
+func testDbFind(t *testing.T) {
+	var user model.User
+
+	// SELECT * FROM users WHERE deleted_at IS NULL AND id = 99 LIMIT 1
+	db.Where("id = ?", 99).First(&user)
+	t.Log(user)
+}
+
+func testDbUnscopedFind(t *testing.T) {
+
+	var user model.User
+	// SELECT * FROM users WHERE id = 99
+	db.Unscoped().Where("id = ?", 99).First(&user)
+	t.Log(user)
+>>>>>>> delete-data
 
 	if result.Error != nil {
 		t.Fail()
@@ -340,6 +378,7 @@ func testDbUpdateColumnGormExpr(t *testing.T) {
 func TestModel(t *testing.T) {
 
 	// t.Run("Create user model", testCreateUserModel)
+<<<<<<< HEAD
 	// t.Run("Update user", testUpdateUser)
 
 	// create a user
@@ -420,6 +459,16 @@ func TestModel(t *testing.T) {
 	// t.Run("db.Update( gorm.Expr() )", testUpdateGormExpr)
 
 	t.Run("db.UpdateColumn()", testDbUpdateColumnGormExpr)
+=======
+
+	// t.Run("Create 100 jinzhu users", testBatchCreateUsers)
+
+	t.Run("Hard delete", testDbDelete)
+
+	t.Run("Find id = 99 user", testDbFind)
+
+	t.Run("db.Unscoped().Find()", testDbUnscopedFind)
+>>>>>>> delete-data
 }
 
 // Author 1-->N  Books

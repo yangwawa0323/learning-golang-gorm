@@ -1,5 +1,6 @@
 package model
 
+<<<<<<< HEAD
 import (
 	"database/sql"
 	"time"
@@ -15,6 +16,19 @@ type User struct {
 	Age          uint8
 	Birthday     *time.Time
 	MemberNumber sql.NullString // golang struct , database table
+=======
+import "gorm.io/gorm"
+
+// golang struct field default value
+type User struct {
+	// ID uint //   `ID` field primary key
+	// // ID 		     uint   `gorm:"primarykey"`
+	// Deleted   gorm.DeletedAt
+	gorm.Model
+	Name  string
+	Email *string
+	Age   uint8
+>>>>>>> delete-data
 }
 
 type VipUser struct {
