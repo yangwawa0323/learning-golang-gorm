@@ -336,6 +336,46 @@ func testDbUpdateColumnGormExpr(t *testing.T) {
 	t.Logf("Updated %d row(s)\n", result.RowsAffected)
 }
 
+type Result struct {
+	ID   int
+	Name string
+	Age  int
+}
+
+func testDbRawScan(t *testing.T) {
+	// var results []Result  // 👍
+	var results []map[string]interface{}
+	db.Raw("SELECT name,age FROM friends LIMIT 10").Scan(&results)
+	// t.Log(results)
+	for _, result := range results {
+		for key, value := range result {
+			t.Log(key, " : ", value)
+		}
+		t.Log("===============")
+	}
+}
+
+func testDbExec(t *testing.T) {
+	db.Exec("TRUNCATE TABLE friends")
+}
+
+func testDbSession(t *testing.T) {
+	var city model.City
+	stmt := dryDb.Where("name LIKE ? AND population < ?", "Til%", 500).First(&city).Statement
+	t.Log(stmt.SQL.String())
+	t.Log(stmt.Vars)
+}
+
+func testDbToSQL(t *testing.T) {
+	var sql string = db.ToSQL(func(tx *gorm.DB) *gorm.DB {
+		var users []model.User
+		return tx.Model(&model.User{}).Where("id IN ?", []int{10, 20, 30}).Limit(10).Order("age desc").Find(&users)
+
+	})
+
+	t.Log(sql)
+}
+
 // TestXXXX(t *testing.T)
 func TestModel(t *testing.T) {
 
@@ -419,7 +459,19 @@ func TestModel(t *testing.T) {
 	//  gorm.Expr
 	// t.Run("db.Update( gorm.Expr() )", testUpdateGormExpr)
 
-	t.Run("db.UpdateColumn()", testDbUpdateColumnGormExpr)
+	// t.Run("db.UpdateColumn()", testDbUpdateColumnGormExpr)
+
+	// Raw query
+	// t.Run("db.Raw().Scan()", testDbRawScan)
+
+	// Execution
+	// t.Run("db.Exec()", testDbExec)
+
+	// Dry Run
+	t.Run("db.Session() Dry Run", testDbSession)
+
+	// db.ToSQL
+	t.Run("db.ToSQL()", testDbToSQL)
 }
 
 // Author 1-->N  Books
