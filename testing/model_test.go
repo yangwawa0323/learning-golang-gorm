@@ -253,6 +253,89 @@ func testDbGroupHaving(t *testing.T) {
 	t.Logf("%#v", r)
 }
 
+func testObjectUpdate(t *testing.T) {
+	// var user model.User
+	// db.Order("ID desc").First(&user)
+
+	// user.Name = "DDDDD Harvey"
+
+	// gorm.Save()  if has ID use UPDATE
+
+	db.Save(&model.User{Model: gorm.Model{ID: 100}, Name: "Jinzhu", Age: 99})
+	// gorm.Sace()  if has not ID use INSERT INTO
+	// db.Save(&model.User{Name: "Jinzhu", Age: 99})
+
+	// t.Log("user id:", user.ID)
+
+}
+
+func testDbUpdate(t *testing.T) {
+	result := db.Model(&model.User{}).Where("id = ?", 100).Update("name", "Jinzhu").Update("age", 99)
+
+	if result.Error != nil {
+		t.Fail()
+	}
+
+	t.Logf("Update %d row(s)", result.RowsAffected)
+
+}
+
+func testDbUpdates(t *testing.T) {
+	// result := db.Model(&model.User{}).Where("id = ? ", 100).Updates(&model.User{Age: 56, Name: "Hello"})
+
+	result := db.Model(&model.User{}).Where("id = ? ", 100).Updates(map[string]interface{}{
+		"name": "world", "age": 77,
+	})
+	if result.Error != nil {
+		t.Fail()
+	}
+
+	t.Logf("Update %d row(s)", result.RowsAffected)
+}
+
+func testDbSelectUpdate(t *testing.T) {
+	// db.Model(&model.User{}).Where("id = ? ", 100).Select("age").Updates(map[string]interface{}{
+	// 	"name": "hello_world_55", "age": 55, "email": "unknown66@qq.com",
+	// })
+
+	var email = "xxxx@qq.com"
+	db.Model(&model.User{}).Where("id = ? ", 99).Select("age").Updates(
+		&model.User{Name: "xxxx", Age: 44, Email: &email},
+	)
+}
+
+// Update does work without Where() use the Primary update if have the primary
+func testDbWhereUpdates(t *testing.T) {
+	// result := db.Model(&model.User{}).Where("id IN ?", []int{80, 99}).Updates(model.User{Name: "Hello", Age: 18})
+
+	result := db.Model(&model.User{}).Where("id <> ? ", "-1").Updates(model.User{Name: "Hello", Age: 18})
+	if result.Error != nil {
+		t.Fail()
+	}
+
+	t.Logf("Updated %d row(s)\n", result.RowsAffected)
+}
+
+// Update age = age + 1
+func testUpdateGormExpr(t *testing.T) {
+	result := db.Model(&model.User{}).Where("id <> ?", -1).Update("age", gorm.Expr("age + ?", 1))
+	if result.Error != nil {
+		t.Fail()
+	}
+
+	t.Logf("Updated %d row(s)\n", result.RowsAffected)
+
+}
+
+func testDbUpdateColumnGormExpr(t *testing.T) {
+	result := db.Model(&model.City{}).Where("population < 500").UpdateColumn("population", gorm.Expr("population * ?", 1.1))
+	if result.Error != nil {
+		t.Fail()
+	}
+
+	t.Logf("Updated %d row(s)\n", result.RowsAffected)
+}
+
 // TestXXXX(t *testing.T)
 func TestModel(t *testing.T) {
 
@@ -317,7 +400,26 @@ func TestModel(t *testing.T) {
 	// t.Run("db.Limit()", testDbLimitOffset)
 
 	// db.Select().Group()
-	t.Run("db.Select().Group()", testDbGroupHaving)
+	// t.Run("db.Select().Group()", testDbGroupHaving)
+
+	// object update
+	// t.Run("object update", testObjectUpdate)
+
+	// db.Update()  update single field
+	// t.Run("db.Update()", testDbUpdate)
+
+	// db.Updates() update multiple field
+	// t.Run("db.Updates()", testDbUpdates)
+
+	// db.Select().Updates()
+	// t.Run("db.Select().Updates()", testDbSelectUpdate)
+
+	// t.Run("db.Where().Update()", testDbWhereUpdates)
+
+	//  gorm.Expr
+	// t.Run("db.Update( gorm.Expr() )", testUpdateGormExpr)
+
+	t.Run("db.UpdateColumn()", testDbUpdateColumnGormExpr)
 }
 
 // Author 1-->N  Books
