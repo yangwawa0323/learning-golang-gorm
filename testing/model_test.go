@@ -18,9 +18,28 @@ func testBatchCreateUsers(t *testing.T) {
 		}
 		users = append(users, user)
 	}
+
+	db.Create(&users)
 }
 
-func testUpdateUser(t *testing.T) {
+func testDbDelete(t *testing.T) {
+	db.Where("id = ?", 99).Delete(&model.User{})
+}
+
+func testDbFind(t *testing.T) {
+	var user model.User
+
+	// SELECT * FROM users WHERE deleted_at IS NULL AND id = 99 LIMIT 1
+	db.Where("id = ?", 99).First(&user)
+	t.Log(user)
+}
+
+func testDbUnscopedFind(t *testing.T) {
+
+	var user model.User
+	// SELECT * FROM users WHERE id = 99
+	db.Unscoped().Where("id = ?", 99).First(&user)
+	t.Log(user)
 
 }
 
@@ -28,5 +47,12 @@ func testUpdateUser(t *testing.T) {
 func TestModel(t *testing.T) {
 
 	// t.Run("Create user model", testCreateUserModel)
-	t.Run("Update user", testUpdateUser)
+
+	// t.Run("Create 100 jinzhu users", testBatchCreateUsers)
+
+	t.Run("Hard delete", testDbDelete)
+
+	t.Run("Find id = 99 user", testDbFind)
+
+	t.Run("db.Unscoped().Find()", testDbUnscopedFind)
 }
