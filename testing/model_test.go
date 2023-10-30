@@ -66,19 +66,34 @@ func testPreloadUserForCompany(t *testing.T) {
 	t.Log(company)
 }
 
-func testCreateUserCreditCard(t *testing.T) {
+func testCreateUserCreditCards(t *testing.T) {
 	fake := faker.New()
-
-	var user model.User
-	db.First(&user, 7)
-
-	var card model.CreditCard = model.CreditCard{
-		Number: fake.Payment().CreditCardNumber(),
+	for i := 1; i <= 9; i++ {
+		var card = model.CreditCard{
+			UserID: i,
+			Number: fake.Payment().CreditCardNumber(),
+		}
+		db.Create(&card)
 	}
-	db.Create(&card)
+}
 
-	user.CreditCard = card
-	db.Save(user)
+func testQueryUserCreditCard(t *testing.T) {
+	var user model.User
+	db.Preload("CreditCard").First(&user, 8)
+	t.Log("credit card number: ", user.CreditCard.Number)
+	t.Log("user : ", user)
+	t.Log("===============")
+
+}
+
+func testQueryCreditCardForUser(t *testing.T) {
+	var card model.CreditCard
+	db.First(&card, 8).Preload("User")
+
+	t.Log("credit card number: ", card.Number)
+	t.Log("card : ", card)
+	t.Log("===============")
+
 }
 
 // TestXXXX(t *testing.T)
@@ -93,7 +108,9 @@ func TestModel(t *testing.T) {
 
 	// t.Run("Preload users for company", testPreloadUserForCompany)  // :-1
 
-	t.Run("create user credit card", testCreateUserCreditCard)
+	// t.Run("create user credit cards", testCreateUserCreditCards)
+
+	t.Run("query credit card by user id ", testQueryCreditCardForUser)
 }
 
 // Author 1-->N  Books
