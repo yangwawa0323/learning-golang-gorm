@@ -80,7 +80,7 @@ func testCreateUserCreditCards(t *testing.T) {
 func testQueryUserCreditCard(t *testing.T) {
 	var user model.User
 	db.Preload("CreditCard").First(&user, 8)
-	t.Log("credit card number: ", user.CreditCard.Number)
+	// t.Log("credit card number: ", user.CreditCard.Number)
 	t.Log("user : ", user)
 	t.Log("===============")
 
@@ -94,6 +94,15 @@ func testQueryCreditCardForUser(t *testing.T) {
 	t.Log("card : ", card)
 	t.Log("===============")
 
+}
+
+func testQueryUserCards(t *testing.T) {
+	var user model.User
+	db.Preload("CreditCard").First(&user, 8)
+	t.Log(user)
+	for _, card := range user.CreditCards {
+		t.Log(card.Number)
+	}
 }
 
 // TestXXXX(t *testing.T)
@@ -110,7 +119,9 @@ func TestModel(t *testing.T) {
 
 	// t.Run("create user credit cards", testCreateUserCreditCards)
 
-	t.Run("query credit card by user id ", testQueryCreditCardForUser)
+	t.Run("query user has-many credit cards", testQueryUserCards)
+
+	// t.Run("query credit card by user id ", testQueryCreditCardForUser)
 }
 
 // Author 1-->N  Books

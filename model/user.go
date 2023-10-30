@@ -6,9 +6,9 @@ type User struct {
 	gorm.Model
 	Name string
 	// IMPORANT!!!
-	CompanyID  int // belong-to  foreighKey
-	Company    Company
-	CreditCard CreditCard
+	CompanyID   int // belong-to  foreighKey
+	Company     Company
+	CreditCards []CreditCard
 }
 
 type CreditCard struct { // credit_card(s)
