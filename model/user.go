@@ -1,28 +1,16 @@
 package model
 
-import (
-	"database/sql"
-	"time"
-)
+import "gorm.io/gorm"
 
-// golang struct field default value
 type User struct {
-	ID uint //   `ID` field primary key
-	// ID 		     uint   `gorm:"primarykey"`
-	Name         string  `gorm:"type:VARCHAR(250);not null"`
-	Email        *string `gorm:"not null"`
-	Age          uint8
-	Birthday     *time.Time
-	MemberNumber sql.NullString // golang struct , database table
-	Expired      sql.NullBool   `gorm:"default:false"`
+	gorm.Model
+	Name string
+	// IMPORANT!!!
+	CompanyID int // belong-to  foreighKey
+	Company   Company
 }
 
-type VipUser struct {
-	User     User `gorm:"embedded"`
-	PostCode string
-}
-
-type Employee struct {
-	User         User `gorm:"embedded"`
-	SocialNumber string
+type Company struct {
+	gorm.Model // ID, CreatedAt, UpdatedAt, DeletedAt
+	Name       string
 }
