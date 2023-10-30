@@ -59,6 +59,13 @@ func testJoin(t *testing.T) {
 
 }
 
+func testPreloadUserForCompany(t *testing.T) {
+	var company model.Company
+	db.Preload("User").First(&company, 13)
+
+	t.Log(company)
+}
+
 // TestXXXX(t *testing.T)
 func TestModel(t *testing.T) {
 	// t.Run("Create users and companies", testCreatUserCompany)
@@ -69,6 +76,7 @@ func TestModel(t *testing.T) {
 	// Join
 	t.Run("Join tables", testJoin)
 
+	t.Run("Preload users for company", testPreloadUserForCompany)
 }
 
 // Author 1-->N  Books
