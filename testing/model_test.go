@@ -66,17 +66,34 @@ func testPreloadUserForCompany(t *testing.T) {
 	t.Log(company)
 }
 
+func testCreateUserCreditCard(t *testing.T) {
+	fake := faker.New()
+
+	var user model.User
+	db.First(&user, 7)
+
+	var card model.CreditCard = model.CreditCard{
+		Number: fake.Payment().CreditCardNumber(),
+	}
+	db.Create(&card)
+
+	user.CreditCard = card
+	db.Save(user)
+}
+
 // TestXXXX(t *testing.T)
 func TestModel(t *testing.T) {
 	// t.Run("Create users and companies", testCreatUserCompany)
 
 	// Preload data
-	t.Run("Preload data", testPreload)
+	// t.Run("Preload data", testPreload)
 
 	// Join
-	t.Run("Join tables", testJoin)
+	// t.Run("Join tables", testJoin)
 
-	t.Run("Preload users for company", testPreloadUserForCompany)
+	// t.Run("Preload users for company", testPreloadUserForCompany)  // :-1
+
+	t.Run("create user credit card", testCreateUserCreditCard)
 }
 
 // Author 1-->N  Books

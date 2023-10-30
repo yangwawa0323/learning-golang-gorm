@@ -27,5 +27,6 @@ func init() {
 	db.AutoMigrate(
 		&model.User{},
 		&model.Company{},
+		&model.CreditCard{},
 	)
 }
