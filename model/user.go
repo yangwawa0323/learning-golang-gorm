@@ -8,7 +8,7 @@ type User struct {
 	// IMPORANT!!!
 	CompanyID   int // belong-to  foreighKey
 	Company     Company
-	CreditCards []CreditCard
+	CreditCards []CreditCard //preload owner field
 }
 
 type CreditCard struct { // credit_card(s)

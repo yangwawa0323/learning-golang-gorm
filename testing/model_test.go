@@ -15,13 +15,15 @@ func testCreatUserCompany(t *testing.T) {
 		Name: fake.Company().Name(),
 	}
 	db.Create(&company)
-	for i := 0; i < 3; i++ {
-		var user = model.User{
-			Company: company,
-			Name:    fake.Person().Name(),
+	for j := 0; j < 5; j++ {
+		for i := 0; i < 3; i++ {
+			var user = model.User{
+				Company: company,
+				Name:    fake.Person().Name(),
+			}
+			t.Log("create a user")
+			db.Create(&user)
 		}
-		t.Log("create a user")
-		db.Create(&user)
 	}
 }
 
@@ -68,12 +70,15 @@ func testPreloadUserForCompany(t *testing.T) {
 
 func testCreateUserCreditCards(t *testing.T) {
 	fake := faker.New()
-	for i := 1; i <= 9; i++ {
-		var card = model.CreditCard{
-			UserID: i,
-			Number: fake.Payment().CreditCardNumber(),
+
+	for j := 0; j < 3; j++ {
+		for i := 1; i <= 9; i++ {
+			var card = model.CreditCard{
+				UserID: i,
+				Number: fake.Payment().CreditCardNumber(),
+			}
+			db.Create(&card)
 		}
-		db.Create(&card)
 	}
 }
 
@@ -98,7 +103,7 @@ func testQueryCreditCardForUser(t *testing.T) {
 
 func testQueryUserCards(t *testing.T) {
 	var user model.User
-	db.Preload("CreditCard").First(&user, 8)
+	db.Preload("CreditCards").First(&user, 2) // corresponding to owner struct field
 	t.Log(user)
 	for _, card := range user.CreditCards {
 		t.Log(card.Number)
@@ -108,6 +113,10 @@ func testQueryUserCards(t *testing.T) {
 // TestXXXX(t *testing.T)
 func TestModel(t *testing.T) {
 	// t.Run("Create users and companies", testCreatUserCompany)
+	// t.Run("create user credit cards", testCreateUserCreditCards)
+
+	t.Run("query user has-many credit cards", testQueryUserCards)
+	// t.Run("query credit card by user id ", testQueryCreditCardForUser)
 
 	// Preload data
 	// t.Run("Preload data", testPreload)
@@ -117,11 +126,6 @@ func TestModel(t *testing.T) {
 
 	// t.Run("Preload users for company", testPreloadUserForCompany)  // :-1
 
-	// t.Run("create user credit cards", testCreateUserCreditCards)
-
-	t.Run("query user has-many credit cards", testQueryUserCards)
-
-	// t.Run("query credit card by user id ", testQueryCreditCardForUser)
 }
 
 // Author 1-->N  Books
