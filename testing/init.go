@@ -19,13 +19,7 @@ func init() {
 		log.Panicln("Failed to connect database.")
 	}
 
-	db.AutoMigrate(&model.Student{},
-		&model.Product{},
+	db.AutoMigrate(
 		&model.User{},
-		&model.VipUser{},
-		&model.Employee{},
-		&model.Book{},
-		&model.Author{},
-		&model.City{},
 	)
 }
