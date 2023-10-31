@@ -19,10 +19,12 @@ type User struct {
 	UUID  string
 }
 
-func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
-	u.UUID = uuid.New()
+func (u *User) BeforeCreate(tx *gorm.DB) error {
+	u.UUID = uuid.New().String()
+
+	var err error
 	if u.Age > 65 {
-		err = errors.New("user is too old")
+		err = errors.New("The user is too old.")
 	}
-	return
+	return err
 }

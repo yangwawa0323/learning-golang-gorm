@@ -3,30 +3,27 @@
 package testing
 
 import (
-	"math/rand"
 	"testing"
 
-	"github.com/jaswdr/faker"
 	"github.com/yangwawa0323/learning-golang-gorm/model"
 )
 
-func testCreateUsers(t *testing.T) {
-	fake := faker.New()
-	var users []model.User
-	max := 70
-	min := 56
-	for i := 0; i < 30; i++ {
-		users = append(users, model.User{
-			Name: fake.Person().Name(),
-			Age:  uint8(rand.Intn(max-min) + min),
-		})
+func testBeforeCreateHook(t *testing.T) {
+	var user model.User = model.User{
+		Name: "jinzhu64",
+		Age:  64,
 	}
-	db.Save(&users)
+	result := db.Create(&user)
+	if result.Error != nil {
+		t.Error(result.Error)
+		t.Fail()
+	}
+
 }
 
 // TestXXXX(t *testing.T)
 func TestModel(t *testing.T) {
-	t.Run("create users ", testCreateUsers)
+	t.Run("before create hook", testBeforeCreateHook)
 }
 
 // Author 1-->N  Books

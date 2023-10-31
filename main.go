@@ -95,7 +95,7 @@ func init() {
 		log.Panicln("Failed to connect database.")
 	}
 
-	db.AutoMigrate(&model.Student{}, &model.Product{})
+	db.AutoMigrate()
 }
 
 func main() {
