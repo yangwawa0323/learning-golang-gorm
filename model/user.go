@@ -1,16 +1,20 @@
 package model
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 import (
 	"database/sql"
 	"time"
 
 	"gorm.io/gorm"
 )
+=======
+import "gorm.io/gorm"
+>>>>>>> has-many
 
-// golang struct field default value
 type User struct {
 	gorm.Model
+<<<<<<< HEAD
 	Name         string
 	Email        *string
 	Age          uint8
@@ -29,14 +33,23 @@ type User struct {
 	Email *string
 	Age   uint8
 >>>>>>> delete-data
+=======
+	Name string
+	// IMPORANT!!!
+	CompanyID   int // belong-to  foreighKey
+	Company     Company
+	CreditCards []CreditCard //preload owner field
+>>>>>>> has-many
 }
 
-type VipUser struct {
-	User     User `gorm:"embedded"`
-	PostCode string
+type CreditCard struct { // credit_card(s)
+	gorm.Model
+	Number string
+	UserID int // XxxID   Xxx struct name ,ID field ;
+	// table field  xxx_id
 }
 
-type Employee struct {
-	User         User `gorm:"embedded"`
-	SocialNumber string
+type Company struct {
+	gorm.Model // ID, CreatedAt, UpdatedAt, DeletedAt
+	Name       string
 }
